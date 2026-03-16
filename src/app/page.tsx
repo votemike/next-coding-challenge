@@ -1,6 +1,26 @@
 'use client';
 import { useState } from 'react';
 import styles from './page.module.css';
+import { Item } from './components';
+
+const itemsData = [
+  {
+    name: 'Item 1',
+    description: 'Foo',
+  },
+  {
+    name: 'Item 2',
+    description: 'Bar',
+  },
+  {
+    name: 'Item 3',
+    description: 'Baz',
+  },
+  {
+    name: 'Item 4',
+    description: 'Qux',
+  },
+];
 
 function ItemCount({ count, name }: { count: number; name: string }) {
   return (
@@ -17,12 +37,10 @@ export default function Home() {
   const [itemCount, setItemCount] = useState<number>(0);
 
   const addToCart = (product: string) => {
-    const alreadyInCart = items[product];
-
-    setItems({
-      ...items,
-      [product]: { quantity: (alreadyInCart?.quantity || 0) + 1 },
-    });
+    setItems((prev) => ({
+      ...prev,
+      [product]: { quantity: (prev[product]?.quantity || 0) + 1 },
+    }));
 
     setItemCount((prev) => prev + 1);
   };
@@ -35,54 +53,25 @@ export default function Home() {
           <button
             className={styles.basket}
           >{`Basket: ${itemCount} item${itemCount === 1 ? '' : 's'}`}</button>
-          <ItemCount name="Item 1" count={items['Item 1']?.quantity || 0} />
-          <ItemCount name="Item 2" count={items['Item 2']?.quantity || 0} />
-          <ItemCount name="Item 3" count={items['Item 3']?.quantity || 0} />
-          <ItemCount name="Item 4" count={items['Item 4']?.quantity || 0} />
+          {itemsData.map((item, index) => (
+            <ItemCount
+              key={index}
+              name={item.name}
+              count={items[item.name]?.quantity || 0}
+            />
+          ))}
         </div>
       </div>
 
       <div className={styles.grid}>
-        <button
-          className={styles.card}
-          onClick={() => addToCart('Item 1')}
-          aria-label="Add to basket"
-        >
-          <h2>
-            Item 1 <span>-&gt;</span>
-          </h2>
-          <p>Foo</p>
-        </button>
-        <button
-          className={styles.card}
-          onClick={() => addToCart('Item 2')}
-          aria-label="Add to basket"
-        >
-          <h2>
-            Item 2 <span>-&gt;</span>
-          </h2>
-          <p>Bar</p>
-        </button>
-        <button
-          className={styles.card}
-          onClick={() => addToCart('Item 3')}
-          aria-label="Add to basket"
-        >
-          <h2>
-            Item 3 <span>-&gt;</span>
-          </h2>
-          <p>Baz</p>
-        </button>
-        <button
-          className={styles.card}
-          onClick={() => addToCart('Item 4')}
-          aria-label="Add to basket"
-        >
-          <h2>
-            Item 4 <span>-&gt;</span>
-          </h2>
-          <p>Qux</p>
-        </button>
+        {itemsData.map((item, index) => (
+          <Item
+            key={index}
+            callback={addToCart}
+            name={item.name}
+            description={item.description}
+          />
+        ))}
       </div>
     </main>
   );
